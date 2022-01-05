@@ -3,7 +3,7 @@
 #Install the nvim ppa and nvim
 sudo add-apt-repository ppa:neovim-ppa/stable
 sudo apt update
-sudo apt install -y nvim
+sudo apt install -y neovim
 
 #Install vim-plug for neovim
 sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
@@ -13,7 +13,7 @@ sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.
 mkdir -p $HOME/.config/nvim
 
 cp ./init.vim $HOME/.config/nvim/init.vim
-cp ./coc-settings.json $HOME/.config/nvim/init.vim
+cp ./coc-settings.json $HOME/.config/nvim/coc-settings.json
 
 #Setup fonts
 mkdir -p $HOME/.fonts
