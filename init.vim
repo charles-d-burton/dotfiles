@@ -136,6 +136,11 @@ let g:go_def_mapping_enabled = 0
 set nu
 set tabstop=4
 set shiftwidth=4
+set nomodeline
+set autoindent
+set nocompatible
+set showmatch
+set expandtab
 map <C-n> :NERDTreeToggle<CR>
 
 
@@ -186,3 +191,6 @@ let g:webdevicons_enable_nerdtree = 1
 " loading the plugin
 let g:webdevicons_enable = 1
 
+" Terraform settings
+let g:terraform_align=1
+let g:terraform_fmt_on_save=1
