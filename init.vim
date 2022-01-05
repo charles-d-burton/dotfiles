@@ -143,6 +143,18 @@ set showmatch
 set expandtab
 map <C-n> :NERDTreeToggle<CR>
 
+" open files in tabs
+autocmd VimEnter * tab all
+autocmd BufAdd * exe 'tablast | tabe "' . expand( "<afile") .'"'
+
+" Set quick navigation between tabs
+nnoremap H gT
+nnoremap L gt
+
+" Set Gnome terminal like controls for tabs
+:nnoremap <C-S-t> :tabnew<CR>
+:inoremap <C-S-t> <Esc>:tabnew<CR>
+:inoremap <C-S-w> <Esc>:tabclose<CR>
 
 " TreeSitter Setup
 
