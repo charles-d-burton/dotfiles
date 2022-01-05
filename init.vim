@@ -143,10 +143,6 @@ set showmatch
 set expandtab
 map <C-n> :NERDTreeToggle<CR>
 
-" open files in tabs
-autocmd VimEnter * tab all
-autocmd BufAdd * exe 'tablast | tabe "' . expand( "<afile") .'"'
-
 " Set quick navigation between tabs
 nnoremap H gT
 nnoremap L gt
