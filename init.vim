@@ -19,22 +19,40 @@ Plug 'https://github.com/junegunn/vim-github-dashboard.git'
 Plug 'SirVer/ultisnips' | Plug 'honza/vim-snippets'
 
 " On-demand loading
-Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+" Plug 'scrooloose/nerdtree', { 'on':  'NERDTreeToggle' }
+Plug 'ms-jpq/chadtree', {'branch': 'chad', 'do': 'python3 -m chadtree deps'}
 
 " Using a tagged release; wildcard allowed (requires git 1.9.2 or above)
-Plug 'fatih/vim-go', { 'tag': '*' }
+" Plug 'fatih/vim-go', { 'tag': '*' }
 
 " Plugin options
-Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
+" Plug 'nsf/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 
 " Plugin outside ~/.vim/plugged with post-update hook
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
-" Install coc
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Go IDE
+Plug 'ray-x/go.nvim'
+
+Plug 'neovim/nvim-lspconfig'
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+Plug 'theHamsta/nvim-dap-virtual-text'
+Plug 'ray-x/guihua.lua' " float term, codeaction and codelens gui support
+
+" Install coq
+" main one
+Plug 'ms-jpq/coq_nvim', {'branch': 'coq'}
+" 9000+ Snippets
+Plug 'ms-jpq/coq.artifacts', {'branch': 'artifacts'}
+
+" lua & third party sources -- See https://github.com/ms-jpq/coq.thirdparty
+" Need to **configure separately**
+
+Plug 'ms-jpq/coq.thirdparty', {'branch': '3p'}
 
 " Install TreeSitter Syntax Highlighting
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'nvim-treesitter/nvim-treesitter'
 
 " Install Moonfly color scheme
 Plug 'bluz71/vim-moonfly-colors'
@@ -54,12 +72,43 @@ Plug 'vim-airline/vim-airline-themes'
 " Install devicons
 Plug 'ryanoasis/vim-devicons'
 
+" Install gitsigns
+Plug 'nvim-lua/plenary.nvim'
+Plug 'lewis6991/gitsigns.nvim'
+
+Plug 'knubie/vim-kitty-navigator', {'do': 'cp ./*.py ~/.config/kitty/'}
+
 " Install barbar
 " Plug 'romgrk/barbar.nvim'
 
 " Initialize plugin system
 call plug#end()
 
+lua <<EOF
+require 'go'.setup({
+  goimport = 'gopls', -- if set to 'gopls' will use golsp format
+  gofmt = 'gopls', -- if set to gopls will use golsp format
+  max_line_len = 120,
+  tag_transform = false,
+  test_dir = '',
+  comment_placeholder = '   ',
+  lsp_cfg = true, -- false: use your own lspconfig
+  lsp_gofumpt = true, -- true: set default gofmt in gopls format to gofumpt
+  lsp_on_attach = true, -- use on_attach from go.nvim
+  dap_debug = true,
+})
+
+local protocol = require'vim.lsp.protocol'
+
+EOF
+
+let g:coq_settings = { 'auto_start': v:true }
+
+lua <<EOF
+
+require('coq')
+
+EOF
 " -------------------------------------------------------------------------------------------------
 " coc.nvim default settings
 " -------------------------------------------------------------------------------------------------
@@ -75,64 +124,6 @@ set shortmess+=c
 " always show signcolumns
 set signcolumn=yes
 
-" Use tab for trigger completion with characters ahead and navigate.
-" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-" Use <c-space> to trigger completion.
-inoremap <silent><expr> <c-space> coc#refresh()
-
-" Use `[c` and `]c` to navigate diagnostics
-nmap <silent> [c <Plug>(coc-diagnostic-prev)
-nmap <silent> ]c <Plug>(coc-diagnostic-next)
-
-" Remap keys for gotos
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use U to show documentation in preview window
-nnoremap <silent> U :call <SID>show_documentation()<CR>
-
-" Remap for rename current word
-nmap <leader>rn <Plug>(coc-rename)
-
-" Remap for format selected region
-vmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-" Show all diagnostics
-nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
-" Manage extensions
-nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
-" Show commands
-nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document
-nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols
-nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list
-nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
-
-
-" MY SETTINGS
-" disable vim-go :GoDef short cut (gd)
-" this is handled by LanguageClient [LC]
-let g:go_def_mapping_enabled = 0
-
 set nu
 set tabstop=4
 set shiftwidth=4
@@ -141,7 +132,7 @@ set autoindent
 set nocompatible
 set showmatch
 set expandtab
-map <C-n> :NERDTreeToggle<CR>
+map <C-n> :CHADopen<CR>
 
 " Set quick navigation between tabs
 nnoremap H gT
@@ -152,13 +143,26 @@ nnoremap L gt
 :inoremap <C-S-t> <Esc>:tabnew<CR>
 :inoremap <C-S-w> <Esc>:tabclose<CR>
 
+
+" Kitty Terminal mappings for split pane navigation
+let g:kitty_navigator_no_mappings = 1
+
+" nnoremap <silent> <c-h> :KittyNavigateLeft<cr>
+" nnoremap <silent> <c-j> :KittyNavigateDown<cr>
+" nnoremap <silent> <c-k> :KittyNavigateUp<cr>
+" nnoremap <silent> <c-l> :KittyNavigateRight<cr>
+
 " Split pane navigation for [hjkl]
 " Use ctrl-[hjkl] to select the active split!
-nmap <silent> <c-k> :wincmd k<CR>
-nmap <silent> <c-j> :wincmd j<CR>
-nmap <silent> <c-h> :wincmd h<CR>
-nmap <silent> <c-l> :wincmd l<CR>
+nmap <silent> <c-s-k> :wincmd k<CR>
+nmap <silent> <c-s-j> :wincmd j<CR>
+nmap <silent> <c-s-h> :wincmd h<CR>
+nmap <silent> <c-s-l> :wincmd l<CR>
 
+" nmap <silent> <c-s-k> :resize -1<CR>
+" nmap <silent> <c-s-j> :resize +1<CR>
+" nmap <silent> <c-s-h> :vertical resize -1<CR>
+" nmap <silent> <c-s-l> :vertical resize +1<CR>
 " TreeSitter Setup
 
 lua <<EOF
@@ -209,3 +213,8 @@ let g:webdevicons_enable = 1
 " Terraform settings
 let g:terraform_align=1
 let g:terraform_fmt_on_save=1
+
+" Setup gitsigns
+lua <<EOF
+require('gitsigns').setup()
+EOF
